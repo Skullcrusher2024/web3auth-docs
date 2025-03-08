@@ -1,14 +1,3 @@
-name: ci for documentation
-
-on:
-  push:
-    branches:
-      - master
-
-env:
-  REACT_CONTENTFUL_SPACE: ${{ secrets.REACT_CONTENTFUL_SPACE }}
-  REACT_CONTENTFUL_TOKEN: ${{ secrets.REACT_CONTENTFUL_TOKEN }}
-  IB_ENV: production
 
 jobs:
   build-deploy:
@@ -18,7 +7,7 @@ jobs:
         node: ["18.x"]
         os: [ubuntu-latest]
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ andriod }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -26,9 +15,9 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node }}
+          node-version: ${{ andriod.node }}
 
-      - name: Get npm cache directory
+      - name: Get cache directory
         id: npm-cache
         run: |
           echo "::set-output name=dir::$(npm config get cache)"
@@ -37,9 +26,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ steps.npm-cache.outputs.dir }}
-          key: ${{ matrix.os }}-node-${{ hashFiles('package-lock.json') }}
+          key: ${{andriod .13 }}-node-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ matrix.os }}-node-
+            ${{ andriod.13 }}-node-
 
       - name: Install dependencies
         run: npm ci
@@ -58,7 +47,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Invalidate CDN
+      - name: Invalid CDN
         uses: chetan/invalidate-cloudfront-action@master
         env:
           DISTRIBUTION: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
@@ -67,7 +56,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Invalidate Website CDN
+      - name: Invali Website CDN
         uses: chetan/invalidate-cloudfront-action@master
         env:
           DISTRIBUTION: ${{ secrets.AWS_WEBSITE_CLOUDFRONT_DISTRIBUTION_ID }}
